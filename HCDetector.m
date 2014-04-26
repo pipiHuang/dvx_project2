@@ -39,14 +39,15 @@ for in1 = 1:Row
        end
    end
 end
-threshold = threshold * 0.2;
+threshold = threshold * 0.06;
 disp('threshold = ');
 disp(threshold);
 %%
 %testing thresholding
 P = zeros(Row,Col);
-for i = 1:Row
-    for j = 1:Col
+bo = 30;
+for i = bo:Row-bo
+    for j = bo:Col-bo
         if(R(i,j)>threshold)
             P(i,j) =1 ;
         end
@@ -58,7 +59,7 @@ end
 O = zeros(Row,Col);
 list = zeros(2,1);
 seq = 1;
-b = 9;
+b = 30;
 for i = b:Row-b-1 % set temp for boundary problem
     for j = b:Col-b-1
         if(R(i,j)>threshold && R(i,j)>R(i,j+1) && R(i,j)>R(i+1,j+1) && R(i,j)>R(i+1,j) && R(i,j)>R(i+1,j-1) && R(i,j)>R(i,j-1) && R(i,j)>R(i-1,j-1) && R(i,j)>R(i-1,j) && R(i,j)>R(i-1,j+1))
@@ -69,10 +70,13 @@ for i = b:Row-b-1 % set temp for boundary problem
         end
     end
 end
-figure,imshow(O);
-figure,imshow(uint8(img));
-hold on;
-plot(list(2,:),list(1,:),'*');
+%%
+%show
+
+%figure,imshow(O);
+%figure,imshow(uint8(img));
+%hold on;
+%plot(list(2,:),list(1,:),'*');
 
 
 

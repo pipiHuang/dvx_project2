@@ -5,7 +5,7 @@
 %   I1,I2: origin images
 %   list1,list2: candidate feature list of I1,I2
 %output:
-%   
+%   O = matching list of list1 and list2
 %========================================================================
 function O = feature_match(I1,list1,I2,list2)
 %set feature using gray image
@@ -36,23 +36,28 @@ for i = 1:Num1
 end
 %%
 % sort the coresponding score
-fdis = zeros(1,2);%a list of good feature point of I1 and I2 
-%nu = 1;
+%fdis = zeros(1,2);%a list of good feature point of I1 and I2 
+nu = 30;%number of the best feature points to be taken 
+
 [so turn] = sort(dis(:,1));
-if(size(dis(:,1),1) < 20)
+
+if(size(dis(:,1),1) < nu)
     nu = size(dis(:,1),1);
-else
-nu = 20; %the best 20 feature
 end
+
+finalList = zeros(nu,4);%(number,list1/2,x/y)
 for i = 1:nu
-    fdis(i,1) = turn(i,1);%order of image I1's feature points in list1
-    fdis(i,2) = dis(turn(i,1),2);%order of image I2's feature points in list2
+   % fdis(i,1) = turn(i,1);%order of image I1's feature points in list1
+   %fdis(i,2) = dis(turn(i,1),2);%order of image I2's feature points in list2
+    finalList(i,1) = list1(2,turn(i,1)); %x1
+    finalList(i,2) = list1(1,turn(i,1)); %y1
+    finalList(i,3) = list2(2,dis(turn(i,1),2)); %x2
+    finalList(i,4) = list2(1,dis(turn(i,1),2)); %y2
 end   
-O = dis;
+    O = finalList;
 %%
 %show
 Ic = size(I1(:,:,1),2);
-num = size(fdis,1);
 Icon = [I1,I2];%combine I1 and I2
 figure,imshow(uint8(Icon));
 
@@ -60,7 +65,7 @@ hold on;
 %plot all the original feature point candidates of I1 and I2
 plot(list1(2,:),list1(1,:),'*','Color','b');
 plot(list2(2,:)+Ic,list2(1,:),'*','Color','b');
-for i = 1:num
-    plot([list1(2,fdis(i,1)),list2(2,fdis(i,2))+Ic],[list1(1,fdis(i,1)),list2(1,fdis(i,2))],'LineWidth',1,'Color',[1,0,0]);
+for i = 1:nu
+    plot([finalList(i,1),finalList(i,3)+Ic], [finalList(i,2),finalList(i,4)],'LineWidth',1,'Color',[1,0,0]);
+    %plot([list1(2,fdis(i,1)),list2(2,fdis(i,2))+Ic],[list1(1,fdis(i,1)),list2(1,fdis(i,2))],'LineWidth',1,'Color',[1,0,0]);
 end
-%end
