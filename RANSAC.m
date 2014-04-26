@@ -6,15 +6,15 @@
 %output:
 %   O:
 %=========================================================================
-function tempm = RANSAC(list,I1,I2,k)%I1 I2 are saved for showing ,not necessary
+function If = RANSAC(list,I1,I2,k)%I1 I2 are saved for showing ,not necessary
 
 Num = size(list,1);
 
 
 %%
-%calculate homography
+%calculate homography(affine addition)
 
-thes = 20;  
+thes = 5;  
 tempr = 0;
 tempm=[];
 for in = 1:k
@@ -51,23 +51,56 @@ tempa =[list(ran(i),3),list(ran(i),4),1,0,0,0;
 end
     
 %%
-%show
+%show(forward addition)
 disp(tempr);
-    If = zeros(1400,1800,3);
-    If(300:300+size(I1,1)-1,300:300+size(I1,2)-1,:) = I1;
-    %minv = tempm.';
-    %figure,imshow(uint8(If));
-    %I = zeros(size(I2));
-    for in1 = 1:size(I2,2)%col
+space = 50;
+row = size(I1,1);%forced row of I1 = I2 at feature_match
+co1 = size(I1,2);
+co2 = size(I2,2);
+    If = zeros(space*2+row,space*2+co1+co2,3);
+    If(space: space+row-1, space:space+co1-1, :) = I1;
+%%   
+%{
+    for in1 = 1:co2%col
         for in2 = 1:size(I2,1)%row
             v = tempm*[in1;in2;1];%???
             if(I2(in2,in1,:)~= 0 )
-            If(round(v(2,1))+300,round(v(1,1))+300,:) = I2(in2,in1,:);
+            If(round(v(2,1))+space, round(v(1,1))+space, :) = I2(in2,in1,:);
             end
         end
-        
     end
-
+%}
+%%
+    %backward
+    i2check = I2(:,:,1)+I2(:,:,2)+I2(:,:,3);
+    for in1 = 1:size(If,2)-space %col
+        for in2 = 1:size(If,1)-space %row
+            v = tempm\[in1;in2;1];%???
+            if(v(1,1)<1 || v(1,1)>size(I2,2) || v(2,1)<1 || v(2,1)>size(I2,1))
+                %If(in1,in2,:) = zeros(1,1,3);
+                continue;
+            else
+                    if(i2check(round(v(2,1)), round(v(1,1)))~= 0)
+                If(in2+space,in1+space,:) = I2(round(v(2,1)), round(v(1,1)), :);
+                    end
+            end
+        end
+    end
+%%        
+    
+   %{
+    %as blending
+    for in1 = 2:size(If,1)-1%row: 1000
+        for in2 = 2:size(If,2)-1%col: 1400
+            if(If(in1,in2) ==0)
+                for ch = 1:3
+                p = [If(in1+1,in2,ch),If(in1,in2+1,ch),If(in1-1,in2,ch),If(in1,in2-1,ch)];
+                If(in1,in2,ch) = median(p,2);
+                end
+            end
+        end
+    end
+    %}
  figure,imshow(uint8(If));
 
  %%
@@ -98,6 +131,8 @@ for in = 1:k
 end
 
 disp(rank);
+ %%
+ %show
  If = zeros(1400,1800,3);
  If(300:300+size(I1,1)-1,300:300+size(I1,2)-1,:) = I1;
  for in1 = 1:size(I2,2)%col
