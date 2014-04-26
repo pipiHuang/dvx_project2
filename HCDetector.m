@@ -39,7 +39,7 @@ for in1 = 1:Row
        end
    end
 end
-threshold = threshold * 0.06;
+threshold = threshold * 0.05;
 disp('threshold = ');
 disp(threshold);
 %%
@@ -73,10 +73,10 @@ end
 %%
 %show
 
-%figure,imshow(O);
-%figure,imshow(uint8(img));
-%hold on;
-%plot(list(2,:),list(1,:),'*');
+% figure,imshow(O);
+% figure,imshow(uint8(img));
+% hold on;
+% plot(list(2,:),list(1,:),'*');
 
 
 
