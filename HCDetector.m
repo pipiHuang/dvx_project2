@@ -6,9 +6,9 @@
 %output:
 %   O:all the feature points
 %=========================================================================
-function [list O] = HCDetector(img,theta)
-%imgb = img(:,:,1);
-imgb = 54/256*img(:,:,1)+183/256*img(:,:,2)+19/256*img(:,:,3);
+function [list O] = HCDetector(img,theta,le)
+imgb = img(:,:,2);
+%imgb = 54/256*img(:,:,1)+183/256*img(:,:,2)+19/256*img(:,:,3);
 %figure,imshow(uint8(imgb));
 %%
 %parameter setting
@@ -31,7 +31,7 @@ R = zeros(Row,Col);
 k = 0.06;
 threshold = 0;
 for in1 = 1:Row 
-   for in2 = 1:Col
+   for in2 = Col-le+1:Col
        M = [Ix2(in1,in2),Ixy(in1,in2);Ixy(in1,in2),Iy2(in1,in2)];
        R(in1,in2) = det(M)-k*(trace(M))^2;
        if(threshold<R(in1,in2))
@@ -39,15 +39,15 @@ for in1 = 1:Row
        end
    end
 end
-threshold = threshold * 0.05;
+threshold = threshold * 0.02;%0.05
 disp('threshold = ');
 disp(threshold);
 %%
 %testing thresholding
 P = zeros(Row,Col);
-bo = 30;
+bo = 20;
 for i = bo:Row-bo
-    for j = bo:Col-bo
+    for j = Col-le+1:Col-bo
         if(R(i,j)>threshold)
             P(i,j) =1 ;
         end
@@ -59,9 +59,9 @@ end
 O = zeros(Row,Col);
 list = zeros(2,1);
 seq = 1;
-b = 30;
+b = 20;
 for i = b:Row-b-1 % set temp for boundary problem
-    for j = b:Col-b-1
+    for j = Col-le+1+b:Col-b-1
         if(R(i,j)>threshold && R(i,j)>R(i,j+1) && R(i,j)>R(i+1,j+1) && R(i,j)>R(i+1,j) && R(i,j)>R(i+1,j-1) && R(i,j)>R(i,j-1) && R(i,j)>R(i-1,j-1) && R(i,j)>R(i-1,j) && R(i,j)>R(i-1,j+1))
         O(i,j) = 1;
         list(1,seq) = i;
@@ -72,7 +72,7 @@ for i = b:Row-b-1 % set temp for boundary problem
 end
 %%
 %show
-
+% 
 % figure,imshow(O);
 % figure,imshow(uint8(img));
 % hold on;
