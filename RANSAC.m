@@ -53,13 +53,14 @@ end
 %%
 %show(forward addition)
 disp(tempr);
-space = 50;
+space = 100;
 row = size(I1,1);%forced row of I1 = I2 at feature_match
 co1 = size(I1,2);
 co2 = size(I2,2);
     If = zeros(space*2+row,space*2+co1+co2,3);
     If(space: space+row-1, space:space+co1-1, :) = I1;
 %%   
+%foward warping
 %{
     for in1 = 1:co2%col
         for in2 = 1:size(I2,1)%row
@@ -71,16 +72,21 @@ co2 = size(I2,2);
     end
 %}
 %%
-    %backward
+    %backward warping
     i2check = I2(:,:,1)+I2(:,:,2)+I2(:,:,3);
-    for in1 = 1:size(If,2)-space %col
-        for in2 = 1:size(If,1)-space %row
+    a = size(If,2);
+    b = size(If,1);
+    for in1 = -space+1:-space+size(If,2) %col
+        for in2 = -space+1:space+size(If,1) %row
             v = tempm\[in1;in2;1];%???
             if(v(1,1)<1 || v(1,1)>size(I2,2) || v(2,1)<1 || v(2,1)>size(I2,1))
                 %If(in1,in2,:) = zeros(1,1,3);
                 continue;
             else
                     if(i2check(round(v(2,1)), round(v(1,1)))~= 0)
+                        %if(in2+space>size(If,1)+2)
+                        %disp('over!!');
+                        %end
                 If(in2+space,in1+space,:) = I2(round(v(2,1)), round(v(1,1)), :);
                     end
             end

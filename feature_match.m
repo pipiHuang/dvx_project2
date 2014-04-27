@@ -13,9 +13,18 @@ function [O If1 If2] = feature_match(I1,list1,I2,list2)
 Num1 = size(list1,2);%Num1: number of feature points in I1
 Num2 = size(list2,2);%NUm2: number of feature points in I2
 dis = ones(Num1,2);%the smallest distance between each feature point in I1 to I2
-Img1 = 54/256*I1(:,:,1)+183/256*I1(:,:,2)+19/256*I1(:,:,3);
-Img2 = 54/256*I2(:,:,1)+183/256*I2(:,:,2)+19/256*I2(:,:,3);
-
+%Img1 = 54/256*I1(:,:,1)+183/256*I1(:,:,2)+19/256*I1(:,:,3);
+%Img2 = 54/256*I2(:,:,1)+183/256*I2(:,:,2)+19/256*I2(:,:,3);
+%set feature using red space in RGB
+Img1 = I1(:,:,2);
+Img2 = I2(:,:,2);
+%set feature using hue space
+% I1hsv = rgb2hsv(I1);
+% I2hsv = rgb2hsv(I2);
+% Img1 = I1hsv(:,:,1);
+% Img2 = I2hsv(:,:,1);
+% 
+% 
 %%
 %find the best corespoonding feature point for I1 and I2
 w = 12;%widow size = 8*8+1 = 17
