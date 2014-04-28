@@ -13,7 +13,7 @@ Num = size(list,1);
 
 %%
 %calculate homography(affine addition)
-
+%{
 thes = 5;  
 tempr = 0;
 tempm=[];
@@ -59,6 +59,7 @@ co1 = size(I1,2);
 co2 = size(I2,2);
     If = zeros(space*2+row,space*2+co1+co2,3);
     If(space: space+row-1, space:space+co1-1, :) = I1;
+
 %%   
 %foward warping
 %{
@@ -73,6 +74,7 @@ co2 = size(I2,2);
 %}
 %%
     %backward warping
+    
     i2check = I2(:,:,1)+I2(:,:,2)+I2(:,:,3);
     a = size(If,2);
     b = size(If,1);
@@ -92,6 +94,7 @@ co2 = size(I2,2);
             end
         end
     end
+  %}  
 %%        
     
    %{
@@ -106,12 +109,12 @@ co2 = size(I2,2);
             end
         end
     end
-    %}
- figure,imshow(uint8(If));
-
+    
+figure,imshow(uint8(If));
+%}
  %%
  %shift addition
- %{
+ 
  thres = 10;  
 %rank = zeros(k,1);
 rank = 0;
@@ -139,17 +142,26 @@ end
 disp(rank);
  %%
  %show
- If = zeros(1400,1800,3);
- If(300:300+size(I1,1)-1,300:300+size(I1,2)-1,:) = I1;
+ 
+space = 100;
+row = size(I1,1);%forced row of I1 = I2 at feature_match
+co1 = size(I1,2);
+co2 = size(I2,2);
+    If = zeros(space*2+row,space*2+co1+co2,3);
+    If(space: space+row-1, space:space+co1-1, :) = I1;
+ 
+% If = zeros(1400,1800,3);
+ %If(300:300+size(I1,1)-1,300:300+size(I1,2)-1,:) = I1;
+ 
  for in1 = 1:size(I2,2)%col
      for in2 = 1:size(I2,1)%row
         if(I2(in2,in1,:)~= 0 )
-        If(300+in2-finy,300+in1-finx,:) = I2(in2,in1,:);
+        If(space+in2-finy,space+in1-finx,:) = I2(in2,in1,:);
         end
      end
  end
  figure,imshow(uint8(If));
-%}
+
     
  
     
